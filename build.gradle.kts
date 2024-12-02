@@ -23,7 +23,7 @@ val mixinBooterVersion = "10.2"
 
 minecraft {
     mcVersion = "1.12.2"
-    username = "Desoroxxx"
+    username = "_Chapy_"
     extraRunJvmArguments = listOf("-Dforge.logging.console.level=debug", "-Dfml.coreMods.load=${plugin}", "-Dmixin.hotSwap=true", "-Dmixin.checks.mixininterfaces=true", "-Dmixin.debug.export=true")
 }
 

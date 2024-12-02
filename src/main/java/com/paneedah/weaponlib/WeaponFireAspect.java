@@ -4,6 +4,7 @@ import com.paneedah.mwc.instancing.PlayerWeaponInstance;
 import com.paneedah.mwc.instancing.Tags;
 import com.paneedah.mwc.network.NetworkPermitManager;
 import com.paneedah.mwc.network.messages.MuzzleFlashMessage;
+import com.paneedah.mwc.network.messages.RealisticSoundMessage;
 import com.paneedah.mwc.network.messages.ShellMessageClient;
 import com.paneedah.mwc.network.messages.TryFireMessage;
 import com.paneedah.weaponlib.animation.ClientValueRepo;
@@ -286,9 +287,10 @@ public class WeaponFireAspect implements Aspect<WeaponState, PlayerWeaponInstanc
 
             if (!FMLCommonHandler.instance().getSide().isServer()) {
 
+                CHANNEL.sendToServer(new RealisticSoundMessage(shootSound, player.getPosition(), player.getEntityWorld().getWorldType().getId()));
                 //
-                PositionedSoundRecord psr = new PositionedSoundRecord(shootSound, SoundCategory.PLAYERS, silencerOn ? weapon.getSilencedShootSoundVolume() * 0.4f : weapon.getShootSoundVolume() * 0.4f, 1.0F, MC.player.getPosition().up(5));
-                playShootSound(psr);
+                //PositionedSoundRecord psr = new PositionedSoundRecord(shootSound, SoundCategory.PLAYERS, silencerOn ? weapon.getSilencedShootSoundVolume() * 0.4f : weapon.getShootSoundVolume() * 0.4f, 1.0F, MC.player.getPosition().up(5));
+                //playShootSound(psr);
                 //MC.getSoundHandler().playSound(psr);
             }
 
