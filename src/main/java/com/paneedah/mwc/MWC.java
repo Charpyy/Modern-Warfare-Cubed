@@ -138,7 +138,7 @@ public final class MWC {
         CHANNEL.registerMessage(new WorkbenchServerMessageHandler(), WorkbenchServerMessage.class, 11, Side.SERVER);
         CHANNEL.registerMessage(new CraftingServerMessageHandler(), CraftingServerMessage.class, 12, Side.SERVER);
         CHANNEL.registerMessage(new EntityPickupMessageHandler(), EntityPickupMessage.class, 13, Side.SERVER);
-        CHANNEL.registerMessage(new RealisticSoundHandler(), RealisticSoundMessage.class, 13, Side.SERVER);
+        CHANNEL.registerMessage(new RealisticSoundHandler(), RealisticSoundMessage.class, 14, Side.SERVER);
     }
 
     @Mod.EventHandler
