@@ -37,7 +37,8 @@ public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMess
                         System.out.println("  ");
                         System.out.println("Volume OK pour joueur et distance: " + playerInWorld.getName() + ": " + distance);
                         System.out.println("  ");
-                        CHANNEL.sendTo(new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn()), playerInWorld);
+                        EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
+                        CHANNEL.sendTo(new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn()), playerMP);
                         //world.playSound(playerInWorld, message.getPos(), sound.getCategoryIn(), sound.getVolumeIn(), sound.getPitchIn());
                     }
                 }
