@@ -3,7 +3,7 @@ package com.paneedah.weaponlib;
 import com.paneedah.mwc.instancing.PlayerWeaponInstance;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.melee.PlayerMeleeInstance;
 import dev.redstudio.redcore.math.vectors.Vector3F;
 import net.minecraft.client.model.ModelBase;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class ItemAttachment<T> extends Item implements ModelSource, IModernCraftingRecipe {
+public class ItemAttachment<T> extends Item implements ModelSource, ICraftingRecipe {
 
     private final AttachmentCategory category;
     private final ApplyHandler<T> apply;
@@ -267,18 +267,18 @@ public class ItemAttachment<T> extends Item implements ModelSource, IModernCraft
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override

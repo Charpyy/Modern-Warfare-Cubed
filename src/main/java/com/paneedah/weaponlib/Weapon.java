@@ -59,7 +59,7 @@ import static com.paneedah.mwc.proxies.ClientProxy.MC;
 import static com.paneedah.mwc.ProjectConstants.ID;
 import static com.paneedah.mwc.ProjectConstants.LOGGER;
 
-public class Weapon extends Item implements PlayerItemInstanceFactory<PlayerWeaponInstance, WeaponState>, AttachmentContainer, Reloadable, Inspectable, Modifiable, Updatable, IModernCraftingRecipe {
+public class Weapon extends Item implements PlayerItemInstanceFactory<PlayerWeaponInstance, WeaponState>, AttachmentContainer, Reloadable, Inspectable, Modifiable, Updatable, ICraftingRecipe {
 
     public enum ShellCasingEjectDirection {LEFT, RIGHT}
 
@@ -1011,12 +1011,12 @@ public class Weapon extends Item implements PlayerItemInstanceFactory<PlayerWeap
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
         //return CraftingRegistry.getDatabaseRecipe(this);
     }
@@ -1611,8 +1611,8 @@ public class Weapon extends Item implements PlayerItemInstanceFactory<PlayerWeap
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override

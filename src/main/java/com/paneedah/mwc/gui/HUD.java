@@ -175,10 +175,10 @@ public final class HUD extends Gui {
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-        buffer.pos(0, 0 + height, -1024).tex(0, 1).endVertex();
-        buffer.pos(0 + width, 0 + height, -1024).tex(1, 1).endVertex();
-        buffer.pos(0 + width, 0, -1024).tex(1, 0).endVertex();
-        buffer.pos(0, 0, -1024).tex(0, 0).endVertex();
+        buffer.pos(0, height, -1000).tex(0, 1).endVertex();
+        buffer.pos(0 + width, height, -1000).tex(1, 1).endVertex();
+        buffer.pos(0 + width, 0, -1000).tex(1, 0).endVertex();
+        buffer.pos(0, 0, -1000).tex(0, 0).endVertex();
 
         tessellator.draw();
     }

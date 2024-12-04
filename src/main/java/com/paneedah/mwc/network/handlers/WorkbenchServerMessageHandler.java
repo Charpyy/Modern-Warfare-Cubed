@@ -4,7 +4,7 @@ import com.paneedah.mwc.network.messages.WorkbenchClientMessage;
 import com.paneedah.mwc.network.messages.WorkbenchServerMessage;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.crafting.ammopress.TileEntityAmmoPress;
 import com.paneedah.weaponlib.crafting.base.TileEntityStation;
 import com.paneedah.weaponlib.crafting.workbench.TileEntityWorkbench;
@@ -44,7 +44,7 @@ public final class WorkbenchServerMessageHandler implements IMessageHandler<Work
                     if (tileEntity instanceof TileEntityAmmoPress) {
                         // Since it's based on a queue, you can add whatever you'd like, and it will merely refuse to craft it until you have the resources available.
                         final TileEntityAmmoPress press = (TileEntityAmmoPress) station;
-                        final ItemStack newStack = new ItemStack(CraftingRegistry.getModernCrafting(workbenchServerMessage.getCraftingGroup(), workbenchServerMessage.getCraftingName()).getItemStack().getItem(), workbenchServerMessage.getQuantity());
+                        final ItemStack newStack = new ItemStack(CraftingRegistry.getModernCrafting(workbenchServerMessage.getCraftingGroup(), workbenchServerMessage.getCraftingName()).getOutput().getItem(), workbenchServerMessage.getQuantity());
 
                         if (press.hasStack()) {
                             final ItemStack topQueue = press.getCraftingQueue().getLast();
@@ -61,7 +61,7 @@ public final class WorkbenchServerMessageHandler implements IMessageHandler<Work
                         return;
                     }
 
-                    final CraftingEntry[] modernRecipe = CraftingRegistry.getModernCrafting(workbenchServerMessage.getCraftingGroup(), workbenchServerMessage.getCraftingName()).getModernRecipe();
+                    final CraftingEntry[] modernRecipe = CraftingRegistry.getModernCrafting(workbenchServerMessage.getCraftingGroup(), workbenchServerMessage.getCraftingName()).getCraftingRecipe();
                     if (modernRecipe == null) {
                         return;
                     }
@@ -130,9 +130,9 @@ public final class WorkbenchServerMessageHandler implements IMessageHandler<Work
                         }
 
                         final ItemStack stack = station.mainInventory.getStackInSlot(i);
-                        if (stack.getItem() instanceof IModernCraftingRecipe && ((IModernCraftingRecipe) stack.getItem()).getModernRecipe() != null && (station.dismantleStatus[i - 9] == -1 || station.dismantleStatus[i - 9] > station.dismantleDuration[i - 9])) {
+                        if (stack.getItem() instanceof ICraftingRecipe && ((ICraftingRecipe) stack.getItem()).getCraftingRecipe() != null && (station.dismantleStatus[i - 9] == -1 || station.dismantleStatus[i - 9] > station.dismantleDuration[i - 9])) {
                             station.dismantleStatus[i - 9] = 0;
-                            station.dismantleDuration[i - 9] = ((TileEntityStation) tileEntity).getDismantlingTime(((IModernCraftingRecipe) stack.getItem()));
+                            station.dismantleDuration[i - 9] = ((TileEntityStation) tileEntity).getDismantlingTime(((ICraftingRecipe) stack.getItem()));
                         }
                     }
                     CHANNEL.sendToAllAround(new WorkbenchClientMessage(station.getWorld(), workbenchServerMessage.getTeLocation()), new TargetPoint(0, workbenchServerMessage.getTeLocation().getX(), workbenchServerMessage.getTeLocation().getY(), workbenchServerMessage.getTeLocation().getZ(), 25));

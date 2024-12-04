@@ -2,39 +2,56 @@ package com.paneedah.mwc.groovyscript.script;
 
 import com.cleanroommc.groovyscript.api.GroovyLog;
 import com.cleanroommc.groovyscript.api.IIngredient;
+import com.cleanroommc.groovyscript.api.documentation.annotations.*;
+import com.cleanroommc.groovyscript.helper.Alias;
 import com.cleanroommc.groovyscript.helper.recipe.AbstractRecipeBuilder;
 import com.cleanroommc.groovyscript.registry.VirtualizedRegistry;
-import com.paneedah.mwc.groovyscript.recipes.GSCrafting;
+import com.paneedah.mwc.ProjectConstants;
+import com.paneedah.mwc.groovyscript.recipes.GSCraftingRecipe;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
+import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 import static com.paneedah.mwc.ProjectConstants.NAME;
-import static com.paneedah.mwc.groovyscript.MWCGroovyPlugin.craftingStation;
-import static com.paneedah.weaponlib.crafting.CraftingGroup.GUN;
-import static com.paneedah.weaponlib.crafting.CraftingRegistry.*;
+import static com.paneedah.mwc.groovyscript.MWCGroovyPlugin.CRAFTING_STATION;
+import static com.paneedah.weaponlib.crafting.CraftingGroup.*;
+import static com.paneedah.weaponlib.crafting.CraftingRegistry.craftingMap;
+import static com.paneedah.weaponlib.crafting.CraftingRegistry.deleteRecipeRegistry;
+import static com.paneedah.weaponlib.crafting.CraftingRegistry.registerRecipe;
 
-public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> {
+/**
+ * @author yor42
+ * @version 2024-12-04
+ * @since 0.1
+ */
+@SuppressWarnings("unused")
+@RegistryDescription(linkGenerator = ProjectConstants.ID)
+public final class CraftingStation extends VirtualizedRegistry<ICraftingRecipe> {
 
     @Override
     public void onReload() {
-        this.removeScripted().forEach(CraftingRegistry::deleteRecipeRegistry);
-        this.restoreFromBackup().forEach(CraftingRegistry::registerRecipe);
+        removeScripted().forEach(CraftingRegistry::deleteRecipeRegistry);
+        restoreFromBackup().forEach(CraftingRegistry::registerRecipe);
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return Alias.generateOfClassAnd(CraftingStation.class, "AmmoPress");
     }
 
     /**
      * Remove ALL recipes. no matter the category.
      */
+    @MethodDescription(priority = 4000)
     public void removeAll() {
-        for (ArrayList<IModernCraftingRecipe> list : craftingMap.values()) {
-            for (IModernCraftingRecipe recipe : list) {
-                this.addBackup(recipe);
-            }
-        }
-        clearRecipeRegistry();
+        for (CraftingGroup list : craftingMap.keySet())
+            removeInGroupWithFilter(e -> true, list);
     }
 
     /**
@@ -42,15 +59,10 @@ public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> 
      *
      * @param ingredient Target Ingredient. any recipe with matching output will be removed.
      */
-    public void remove(IIngredient ingredient) {
-        for (ArrayList<IModernCraftingRecipe> list : craftingMap.values()) {
-            for (IModernCraftingRecipe recipe : list) {
-                if (ingredient.test(recipe.getItemStack())) {
-                    deleteRecipeRegistry(recipe);
-                    this.addBackup(recipe);
-                }
-            }
-        }
+    @MethodDescription(example = @Example("ore('oreDiamond')"), priority = 2000)
+    public void removeByOutput(IIngredient ingredient) {
+        for (CraftingGroup list : craftingMap.keySet())
+            removeInGroupWithFilter(ingredient, list);
     }
 
     /**
@@ -58,36 +70,170 @@ public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> 
      *
      * @param group CraftingGroup to remove all recipes inside. valid values = "GUN", "ATTACHMENT_NORMAL", "ATTACHMENT_MODIFICATION", "BULLET", "MAGAZINE"
      */
-    public void removeAllinGroup(String group) {
-        clearGroup(CraftingGroup.valueOf(group));
+    @MethodDescription(priority = 3000)
+    public void removeAllInGroup(CraftingGroup group) {
+        removeInGroupWithFilter((s) -> true, group);
     }
 
-    public void removeInGroup(IIngredient ingredient, CraftingGroup group) {
-        for (IModernCraftingRecipe recipe : craftingMap.get(group)) {
-            if (ingredient.test(recipe.getItemStack())) {
-                deleteRecipeRegistry(recipe);
-                this.addBackup(recipe);
-            }
-        }
+    /**
+     * Remove ALL recipes of Gun Category.
+     */
+    @MethodDescription()
+    public void removeAllGun() {
+        removeAllInGroup(GUN);
     }
 
-    public void removeInGroup(IIngredient ingredient, String group) {
-        removeInGroup(ingredient, CraftingGroup.valueOf(group));
+    /**
+     * Remove ALL recipes of Normal Attachment Category.
+     */
+    @MethodDescription()
+    public void removeAllNormalAttachment() {
+        removeAllInGroup(ATTACHMENT_NORMAL);
     }
 
-    public void addRecipe(IModernCraftingRecipe crafting) {
+    /**
+     * Remove ALL recipes of Modification Attachment Category.
+     */
+    @MethodDescription()
+    public void removeAllModificationAttachment() {
+        removeAllInGroup(ATTACHMENT_MODIFICATION);
+    }
+
+    /**
+     * Remove ALL recipes of Bullet Category.
+     */
+    @MethodDescription()
+    public void removeAllBullet() {
+        removeAllInGroup(BULLET);
+    }
+
+    /**
+     * Remove ALL recipes of Magazine Category.
+     */
+    @MethodDescription()
+    public void removeAllMagazine() {
+        removeAllInGroup(MAGAZINE);
+    }
+
+    /**
+     * Remove ALL recipes of Grenade Category.
+     */
+    @MethodDescription()
+    public void removeAllGrenade() {
+        removeAllInGroup(GRENADE);
+    }
+
+    /**
+     * Remove recipe that outputs matching item of given `ingredient` from given category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     * @param group CraftingGroup to remove matching recipes inside. valid values = "GUN", "ATTACHMENT_NORMAL", "ATTACHMENT_MODIFICATION", "BULLET", "MAGAZINE"
+     */
+    @MethodDescription()
+    public void removeInGroupByOutput(IIngredient ingredient, CraftingGroup group) {
+        removeInGroupWithFilter(ingredient, group);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from gun category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeGunByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, GUN);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from normal attachment category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeNormalAttachmentByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, ATTACHMENT_NORMAL);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from modification attachment category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeModificationAttachmentByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, ATTACHMENT_MODIFICATION);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from bullet category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeBulletByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, BULLET);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from magazine category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeMagazineByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, MAGAZINE);
+    }
+
+    /**
+     * Removes recipe that outputs matching item of given `ingredient` from grenade category.
+     *
+     * @param ingredient Output item of the recipe. recipe with matching output will be removed.
+     */
+    @MethodDescription(example = @Example("ore('oreDiamond')"))
+    public void removeGrenadeByOutput(IIngredient ingredient) {
+        removeInGroupByOutput(ingredient, GRENADE);
+    }
+
+    public void removeInGroupWithFilter(Predicate<ItemStack> ingredient, CraftingGroup group) {
+        List<ICraftingRecipe> recipesToRemove = new ArrayList<>();
+
+        for (ICraftingRecipe recipe : craftingMap.get(group))
+            if (ingredient.test(recipe.getOutput()))
+                recipesToRemove.add(recipe);
+
+        for (ICraftingRecipe recipe : recipesToRemove)
+            removeRecipe(recipe);
+    }
+
+    public void addRecipe(ICraftingRecipe crafting) {
         registerRecipe(crafting);
-        this.addScripted(crafting);
+        addScripted(crafting);
+    }
+
+    public void removeRecipe(ICraftingRecipe crafting) {
+        deleteRecipeRegistry(crafting);
+        addBackup(crafting);
     }
 
     /**
      * Start Recipe Builder for GroovyScript.
      */
+    @RecipeBuilderDescription(example = {
+            @Example(".input(1, item('minecraft:clay')).output(item('minecraft:diamond'))"),
+            @Example(".input(0.5, item('minecraft:gold_ingot')).output(item('minecraft:clay') * 2)")
+    })
     public RecipeBuilder recipeBuilder() {
         return new RecipeBuilder();
     }
 
-    public static class RecipeBuilder extends AbstractRecipeBuilder<GSCrafting> {
+    @Property(property = "group", comp = @Comp(not = "null"))
+    @Property(property = "input", comp = @Comp(gt = 0))
+    @Property(property = "output", comp = @Comp(eq = 1))
+    public static class RecipeBuilder extends AbstractRecipeBuilder<GSCraftingRecipe> {
+
+        @Property(defaultValue = "GUN", comp = @Comp(not = "null"))
+        private CraftingGroup group = GUN;
+        private final List<CraftingEntry> input = new ArrayList<>();
 
         @Override
         public String getErrorMsg() {
@@ -96,14 +242,13 @@ public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> 
 
         @Override
         public void validate(GroovyLog.Msg msg) {
-            // max input == container size of crafting station.
-            this.validateItems(msg, 1, 27, 1, 1);
+            // Max input == container size of crafting station.
+            validateItems(msg, 0, 0, 1, 1);
+
+            msg.add(group == null, "group must not be null!");
+            msg.add(input.isEmpty(), "Input must contain at least one ingredient.");
+            msg.add(input.stream().anyMatch(entry -> entry.getYield() < 0), "Yield values must be non-negative!");
         }
-
-        private final ArrayList<Double> yields = new ArrayList<>();
-        private double yield = 1.0;
-
-        private CraftingGroup group = GUN;
 
         /**
          * Add Ingredient of recipe With ItemStack
@@ -113,32 +258,87 @@ public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> 
          * @return AbstractRecipeBuilder
          */
         @Override
-        public AbstractRecipeBuilder<GSCrafting> input(IIngredient ingredient) {
-            this.yields.add(this.yield);
-            return super.input(ingredient);
+        @RecipeBuilderMethodDescription(field = "input")
+        public AbstractRecipeBuilder<GSCraftingRecipe> input(IIngredient ingredient) {
+            return input(0, ingredient);
         }
 
         /**
-         * Set return Yield of upcoming Ingredient.
+         * Add Ingredient of recipe With ItemStack
          *
-         * @param yield return Yield of upcoming ingredients
+         * @param ingredient crafting ingredient
+         * @param yield refund yield of ingredient
          *
-         * @return this RecipeBuilder
+         * @return AbstractRecipeBuilder
          */
-        public RecipeBuilder setYield(double yield) {
-            this.yield = yield;
+        @RecipeBuilderMethodDescription(field = "input")
+        public AbstractRecipeBuilder<GSCraftingRecipe> input(double yield, IIngredient ingredient) {
+            input.add(new CraftingEntry(ingredient.toMcIngredient(), ingredient.getAmount(), Math.max(0, yield)));
+
             return this;
+        }
+
+        /**
+         * Add Ingredient of recipe With ItemStack
+         *
+         * @param ingredients crafting ingredients
+         * @param yield refund yield of ingredient
+         *
+         * @return AbstractRecipeBuilder
+         */
+        @RecipeBuilderMethodDescription(field = "input")
+        public AbstractRecipeBuilder<GSCraftingRecipe> input(double yield, IIngredient... ingredients) {
+            for (IIngredient ingredient : ingredients)
+                input(yield, ingredient);
+
+            return this;
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupGun() {
+            return setGroup(GUN);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupNormalAttachment() {
+            return setGroup(ATTACHMENT_NORMAL);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupModificationAttachment() {
+            return setGroup(ATTACHMENT_MODIFICATION);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupBullet() {
+            return setGroup(BULLET);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupMagazine() {
+            return setGroup(MAGAZINE);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroupGrenade() {
+            return setGroup(GRENADE);
+        }
+
+        @RecipeBuilderMethodDescription(field = "group")
+        public RecipeBuilder setGroup(String string) {
+            return setGroup(CraftingGroup.valueOf(string));
         }
 
         /**
          * Set Category of Recipe
          *
-         * @param group name of the Group. valid values = "GUN", "ATTACHMENT_NORMAL", "ATTACHMENT_MODIFICATION", "BULLET", "MAGAZINE"
+         * @param group Group of the Recipe. valid values = "GUN", "ATTACHMENT_NORMAL", "ATTACHMENT_MODIFICATION", "BULLET", "MAGAZINE"
          *
          * @return this RecipeBuilder
          */
-        public RecipeBuilder setGroup(String group) {
-            this.group = CraftingGroup.valueOf(group);
+        @RecipeBuilderMethodDescription(field = "group", priority = 3000)
+        public RecipeBuilder setGroup(CraftingGroup group) {
+            this.group = group;
             return this;
         }
 
@@ -148,20 +348,16 @@ public class CraftingStation extends VirtualizedRegistry<IModernCraftingRecipe> 
          * @return Finished Recipe
          */
         @Override
-        public GSCrafting register() {
-            if (!this.validate()) {
+        @RecipeBuilderRegistrationMethod
+        public GSCraftingRecipe register() {
+            if (!validate())
                 return null;
-            }
 
-            final ArrayList<CraftingEntry> entries = new ArrayList<>();
+            final ArrayList<CraftingEntry> entries = new ArrayList<>(input);
+            final GSCraftingRecipe recipe = new GSCraftingRecipe(output.get(0), group, entries.toArray(new CraftingEntry[0]));
 
-            for (int i = 0; i < this.input.size(); i++) {
-                final IIngredient ingredient = this.input.get(i);
-                entries.add(new CraftingEntry(ingredient.toMcIngredient(), ingredient.getAmount(), this.yields.get(i)));
-            }
+            CRAFTING_STATION.addRecipe(recipe);
 
-            final GSCrafting recipe = new GSCrafting(this.output.get(0), this.group, entries.toArray(new CraftingEntry[0]));
-            craftingStation.addRecipe(recipe);
             return recipe;
         }
     }

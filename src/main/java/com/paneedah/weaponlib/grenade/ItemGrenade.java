@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static com.paneedah.mwc.ProjectConstants.ID;
 
 public class ItemGrenade extends Item implements
-        PlayerItemInstanceFactory<PlayerGrenadeInstance, GrenadeState>, AttachmentContainer, Updatable, IModernCraftingRecipe {
+        PlayerItemInstanceFactory<PlayerGrenadeInstance, GrenadeState>, AttachmentContainer, Updatable, ICraftingRecipe {
 
     public static final int DEFAULT_FUSE_TIMEOUT = 3000;
     public static final float DEFAULT_EXPLOSION_STRENTH = 2f;
@@ -43,12 +43,12 @@ public class ItemGrenade extends Item implements
     private CraftingGroup craftGroup;
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
@@ -58,8 +58,8 @@ public class ItemGrenade extends Item implements
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override
