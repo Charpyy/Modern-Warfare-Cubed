@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RealisticSoundMessage implements IMessage {
+    boolean silencer;
     private SoundEvent sound;
     private BlockPos pos;
     private int dimensionId;
@@ -29,6 +30,7 @@ public class RealisticSoundMessage implements IMessage {
         int z = buf.readInt();
         pos = new BlockPos(x, y, z);
         dimensionId = buf.readInt();
+        silencer = buf.readBoolean();
     }
 
     @Override
@@ -41,8 +43,10 @@ public class RealisticSoundMessage implements IMessage {
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
         buf.writeInt(dimensionId);
+        buf.writeBoolean(silencer);
     }
     public SoundEvent getSound() {return this.sound;}
     public BlockPos getPos() { return this.pos;}
     public int getWorldId() {return this.dimensionId;}
+    public boolean getSilencer() {return this.silencer;}
 }
