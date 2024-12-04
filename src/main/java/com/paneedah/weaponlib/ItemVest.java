@@ -7,7 +7,7 @@ import com.paneedah.mwc.rendering.Transform;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.render.IHasModel;
 import com.paneedah.weaponlib.render.modelrepo.ServerGearModelHookRegistry;
 import net.minecraft.client.model.ModelBase;
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import static com.paneedah.mwc.handlers.ClientEventHandler.COOKING_QUEUE;
 import static com.paneedah.mwc.ProjectConstants.ID;
 
-public class ItemVest extends Item implements ISpecialArmor, ModelSource, IModernCraftingRecipe, IHasModel {
+public class ItemVest extends Item implements ISpecialArmor, ModelSource, ICraftingRecipe, IHasModel {
 
 
     public static class Builder {
@@ -311,13 +311,13 @@ public class ItemVest extends Item implements ISpecialArmor, ModelSource, IModer
 
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
@@ -329,8 +329,8 @@ public class ItemVest extends Item implements ISpecialArmor, ModelSource, IModer
 
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
 

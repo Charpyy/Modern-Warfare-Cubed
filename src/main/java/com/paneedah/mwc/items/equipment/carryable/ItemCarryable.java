@@ -6,7 +6,7 @@ import com.paneedah.mwc.rendering.Transform;
 import com.paneedah.weaponlib.config.BalancePackManager;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 
 import static com.paneedah.mwc.ProjectConstants.RED_LOGGER;
 
-public class ItemCarryable extends Item implements IModernCraftingRecipe {
+public class ItemCarryable extends Item implements ICraftingRecipe {
 
     public abstract static class Builder<T extends Builder<T>> {
 
@@ -260,12 +260,12 @@ public class ItemCarryable extends Item implements IModernCraftingRecipe {
     }
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
@@ -275,8 +275,8 @@ public class ItemCarryable extends Item implements IModernCraftingRecipe {
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override

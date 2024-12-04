@@ -5,7 +5,7 @@ import com.paneedah.mwc.network.messages.WorkbenchServerMessage;
 import com.paneedah.weaponlib.ModContext;
 import com.paneedah.weaponlib.animation.gui.GuiRenderUtil;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.crafting.workbench.CustomSearchTextField;
 import com.paneedah.weaponlib.crafting.workbench.GUIButtonCustom;
 import com.paneedah.weaponlib.render.gui.GUIRenderHelper;
@@ -70,7 +70,7 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
     @Setter protected static ModContext modContext;
 
     // Currently selected crafting piece
-    @Getter @Setter private IModernCraftingRecipe selectedCraftingPiece = null;
+    @Getter @Setter private ICraftingRecipe selectedCraftingPiece = null;
 
     // Tells us if we can craft the currently selected item
     private boolean hasRequiredItems = false;
@@ -79,7 +79,7 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
     @Getter private int craftingMode = 1;
 
     // Currently used crafting list.
-    protected ArrayList<IModernCraftingRecipe> filteredCraftingList = new ArrayList<>();
+    protected ArrayList<ICraftingRecipe> filteredCraftingList = new ArrayList<>();
 
     // The page the workbench is on
     @Getter private int page = 1;
@@ -184,8 +184,8 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
         return getSelectedCraftingPiece() != null;
     }
 
-    public void onSelectNewCrafting(IModernCraftingRecipe crafting) {
-        final CraftingEntry[] modernRecipe = crafting.getModernRecipe();
+    public void onSelectNewCrafting(ICraftingRecipe crafting) {
+        final CraftingEntry[] modernRecipe = crafting.getCraftingRecipe();
         final HashMap<ItemStack, Integer> counter = new HashMap<>();
 
         for (int i = 22; i < tileEntity.mainInventory.getSlots(); ++i) {
@@ -312,7 +312,7 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
                     strings.add(TextFormatting.BLUE + "Time remaining: " + TextFormatting.WHITE + GUIRenderHelper.formatTimeString(seconds, TimeUnit.SECONDS));
                     strings.add(TextFormatting.BLUE + "Products:");
 
-                    for (CraftingEntry s : ((IModernCraftingRecipe) item).getModernRecipe())
+                    for (CraftingEntry s : ((ICraftingRecipe) item).getCraftingRecipe())
                         strings.add(TextFormatting.GOLD + String.valueOf((int) Math.round(s.getCount() * s.getYield())) + "x " + TextFormatting.WHITE + format(s.getIngredient().getMatchingStacks()[0].getItem().getTranslationKey()));
                 }
             }
@@ -380,7 +380,7 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
 
             if (!searchBox.getText().isEmpty()) {
                 // Filter out bad results.
-                filteredCraftingList.removeIf((a) -> !I18n.format(a.getItemStack().getTranslationKey() + ".name").toLowerCase().contains(searchBox.getText().toLowerCase()));
+                filteredCraftingList.removeIf((a) -> !I18n.format(a.getOutput().getTranslationKey() + ".name").toLowerCase().contains(searchBox.getText().toLowerCase()));
             }
         }
     }
@@ -550,14 +550,14 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
                                 drawModalRectWithCustomSizedTexture(this.guiLeft + 12 + (x * 23), this.guiTop + 52 + (y * 23), 97f - 22, 262f, 22, 22, 480, 370);
 
                             } else {
-                                setItemRenderTooltip(filteredCraftingList.get(c).getItemStack());
+                                setItemRenderTooltip(filteredCraftingList.get(c).getOutput());
                                 drawModalRectWithCustomSizedTexture(this.guiLeft + 12 + (x * 23), this.guiTop + 52 + (y * 23), 97f, 262f, 22, 22, 480, 370);
                             }
                         }
 
                         RenderHelper.enableGUIStandardItemLighting();
 
-                        MC.getRenderItem().renderItemIntoGUI(filteredCraftingList.get(c).getItemStack(), this.guiLeft + 15 + (x * 23), this.guiTop + 55 + (y * 23));
+                        MC.getRenderItem().renderItemIntoGUI(filteredCraftingList.get(c).getOutput(), this.guiLeft + 15 + (x * 23), this.guiTop + 55 + (y * 23));
                         MC.getTextureManager().bindTexture(GUI_TEX);
 
                         RenderHelper.disableStandardItemLighting();
@@ -573,13 +573,13 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
                 doCraftingModeOneRender(partialTicks, mouseX, mouseY);
 
             } else if (hasSelectedCraftingPiece()) {
-                GuiRenderUtil.drawScaledString(fontRenderer, format(getSelectedCraftingPiece().getItemStack().getTranslationKey()), this.guiLeft + 214, this.guiTop + 31, 0.9, GOLD);
+                GuiRenderUtil.drawScaledString(fontRenderer, format(getSelectedCraftingPiece().getOutput().getTranslationKey()), this.guiLeft + 214, this.guiTop + 31, 0.9, GOLD);
                 GlStateManager.pushMatrix();
                 RenderHelper.enableGUIStandardItemLighting();
                 GlStateManager.translate(this.guiLeft + 275, this.guiTop + 45, 0);
                 GlStateManager.scale(3, 3, 3);
 
-                MC.getRenderItem().renderItemIntoGUI(getSelectedCraftingPiece().getItemStack(), 0, 0);
+                MC.getRenderItem().renderItemIntoGUI(getSelectedCraftingPiece().getOutput(), 0, 0);
 
                 GlStateManager.popMatrix();
             }
@@ -594,10 +594,10 @@ public abstract class GUIContainerStation<T extends TileEntityStation> extends G
             GuiRenderUtil.drawScaledString(fontRenderer, "Results: " + TextFormatting.YELLOW + filteredCraftingList.size(), this.guiLeft + 12, this.guiTop + 191, 0.8, WHITE);
 
             if (hasSelectedCraftingPiece()) {
-                final IModernCraftingRecipe weapon = getSelectedCraftingPiece();
-                if (weapon.getModernRecipe() != null && weapon.getModernRecipe().length != 0) {
+                final ICraftingRecipe weapon = getSelectedCraftingPiece();
+                if (weapon.getCraftingRecipe() != null && weapon.getCraftingRecipe().length != 0) {
                     int c = 0;
-                    for (CraftingEntry entry : weapon.getModernRecipe()) {
+                    for (CraftingEntry entry : weapon.getCraftingRecipe()) {
                         if (entry.getIngredient() == null) {
                             ProjectConstants.LOGGER.warn("Skipped resource");
                             continue;

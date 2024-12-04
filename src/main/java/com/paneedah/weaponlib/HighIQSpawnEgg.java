@@ -4,7 +4,7 @@ import com.paneedah.weaponlib.compatibility.ModelRegistryServerInterchange;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 import static com.paneedah.mwc.ProjectConstants.ID;
 
 @NoArgsConstructor
-public class HighIQSpawnEgg extends Item implements IModernCraftingRecipe {
+public class HighIQSpawnEgg extends Item implements ICraftingRecipe {
 
     private CraftingEntry[] modernRecipe;
     private CraftingGroup craftGroup;
@@ -154,12 +154,12 @@ public class HighIQSpawnEgg extends Item implements IModernCraftingRecipe {
     }
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
@@ -169,8 +169,8 @@ public class HighIQSpawnEgg extends Item implements IModernCraftingRecipe {
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override

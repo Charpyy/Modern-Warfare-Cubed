@@ -1,7 +1,7 @@
 package com.paneedah.weaponlib.crafting.base;
 
 import com.paneedah.weaponlib.crafting.CraftingEntry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -110,7 +110,7 @@ public class TileEntityStation extends TileEntity implements ITickable, ISidedIn
         return facing;
     }
 
-    public int getDismantlingTime(IModernCraftingRecipe crafting) {
+    public int getDismantlingTime(ICraftingRecipe crafting) {
         return 0;
     }
 
@@ -141,8 +141,8 @@ public class TileEntityStation extends TileEntity implements ITickable, ISidedIn
             if (dismantleStatus[i] > dismantleDuration[i]) {
                 final ItemStack stackToDismantle = mainInventory.getStackInSlot(i + 9);
 
-                if (stackToDismantle.getItem() instanceof IModernCraftingRecipe) {
-                    final CraftingEntry[] modernRecipe = ((IModernCraftingRecipe) stackToDismantle.getItem()).getModernRecipe();
+                if (stackToDismantle.getItem() instanceof ICraftingRecipe) {
+                    final CraftingEntry[] modernRecipe = ((ICraftingRecipe) stackToDismantle.getItem()).getCraftingRecipe();
 
                     if (!world.isRemote) {
                         stackToDismantle.shrink(1);

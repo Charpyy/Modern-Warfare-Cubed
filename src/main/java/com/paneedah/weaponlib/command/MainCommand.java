@@ -142,7 +142,7 @@ public class MainCommand extends CommandBase {
         if (item != null && (item instanceof Weapon)) {
             MC.player.sendMessage(new TextComponentString(TextFormatting.GOLD + "-- Recipe for " + TextFormatting.GRAY + item.getItemStackDisplayName(null) + TextFormatting.GOLD + "--"));
 
-            CraftingEntry[] modernRecipe = ((Weapon) item).getModernRecipe();
+            CraftingEntry[] modernRecipe = ((Weapon) item).getCraftingRecipe();
             if (modernRecipe == null) {
                 return;
             }

@@ -3,7 +3,7 @@ package com.paneedah.weaponlib.crafting.ammopress;
 import com.paneedah.weaponlib.ItemBullet;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.crafting.base.TileEntityStation;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
@@ -41,14 +41,14 @@ public class TileEntityAmmoPress extends TileEntityStation {
     }
 
     public int getCraftingDurationForItem(Item item) {
-        if (!(item instanceof IModernCraftingRecipe)) {
+        if (!(item instanceof ICraftingRecipe)) {
             return 0;
         }
-        return getDismantlingTime((IModernCraftingRecipe) item);
+        return getDismantlingTime((ICraftingRecipe) item);
     }
 
     @Override
-    public int getDismantlingTime(IModernCraftingRecipe crafting) {
+    public int getDismantlingTime(ICraftingRecipe crafting) {
         CraftingGroup group = crafting.getCraftingGroup();
         if (Objects.requireNonNull(group) == CraftingGroup.BULLET) {
             return BULLET_CRAFT_DURATION;
@@ -143,7 +143,7 @@ public class TileEntityAmmoPress extends TileEntityStation {
         if (hasStack()) {
             boolean canCraftNextItem = true;
 
-            for (CraftingEntry entry : ((IModernCraftingRecipe) getLatestStackInQueue().getItem()).getModernRecipe()) {
+            for (CraftingEntry entry : ((ICraftingRecipe) getLatestStackInQueue().getItem()).getCraftingRecipe()) {
                 if (inventoryContainsEnoughItems(entry.getIngredient(), entry.getCount(), 22, 49)) {
                     continue;
                 }
@@ -168,8 +168,8 @@ public class TileEntityAmmoPress extends TileEntityStation {
                 crafting = false;
                 ItemStack stack = getLatestStackInQueue();
 
-                IModernCraftingRecipe craftingRecipe = (IModernCraftingRecipe) stack.getItem();
-                for (CraftingEntry ingredient : craftingRecipe.getModernRecipe())
+                ICraftingRecipe craftingRecipe = (ICraftingRecipe) stack.getItem();
+                for (CraftingEntry ingredient : craftingRecipe.getCraftingRecipe())
                     consumeFromInventory(ingredient.getIngredient(), ingredient.getCount(), 22, 49);
 
                 ItemStack splitOff = stack.splitStack(1);

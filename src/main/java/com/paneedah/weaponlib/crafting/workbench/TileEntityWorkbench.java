@@ -2,7 +2,7 @@ package com.paneedah.weaponlib.crafting.workbench;
 
 import com.paneedah.weaponlib.crafting.CraftingGroup;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.crafting.base.TileEntityStation;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class TileEntityWorkbench extends TileEntityStation {
 
-    public IModernCraftingRecipe craftingTarget;
+    public ICraftingRecipe craftingTarget;
 
     // For the client.
     public String craftingTargetName;
@@ -24,7 +24,7 @@ public class TileEntityWorkbench extends TileEntityStation {
     }
 
     @Override
-    public int getDismantlingTime(IModernCraftingRecipe crafting) {
+    public int getDismantlingTime(ICraftingRecipe crafting) {
         return WorkbenchBlock.WORKBENCH_DISMANTLING_TIME;
     }
 
@@ -50,7 +50,7 @@ public class TileEntityWorkbench extends TileEntityStation {
 
         if (this.craftingTarget != null) {
             buf.writeBoolean(true);
-            ByteBufUtils.writeUTF8String(buf, this.craftingTarget.getItemStack().getTranslationKey());
+            ByteBufUtils.writeUTF8String(buf, this.craftingTarget.getOutput().getTranslationKey());
             //System.out.println("Tile Entity Workbench writing " + this.craftingTarget.getItem().getTranslationKey());
             return;
         }
@@ -76,7 +76,7 @@ public class TileEntityWorkbench extends TileEntityStation {
 
         if (craftingTimer != -1 && this.craftingTarget != null) {
             compound.setInteger("craftingTargetID", this.craftingTarget.getCraftingGroup().getID());
-            compound.setString("craftingTargetName", this.craftingTarget.getItemStack().getTranslationKey());
+            compound.setString("craftingTargetName", this.craftingTarget.getOutput().getTranslationKey());
         }
 
         return compound;
@@ -109,7 +109,7 @@ public class TileEntityWorkbench extends TileEntityStation {
             craftingDuration = -1;
 
             if (!this.world.isRemote && this.craftingTarget != null) {
-                addStackToInventoryRange(this.craftingTarget.getItemStack(), 0, 9);
+                addStackToInventoryRange(this.craftingTarget.getOutput(), 0, 9);
                 sendUpdate();
             }
         }

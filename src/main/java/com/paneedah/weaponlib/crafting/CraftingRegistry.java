@@ -17,14 +17,14 @@ import java.util.HashMap;
 public class CraftingRegistry {
 
     // Stores a map of all the items registered in a certain category
-    public static final HashMap<CraftingGroup, ArrayList<IModernCraftingRecipe>> craftingMap = new HashMap<>(200, .7f);
+    public static final HashMap<CraftingGroup, ArrayList<ICraftingRecipe>> craftingMap = new HashMap<>(200, .7f);
 
     // Stores a map of a map of each group under their unlocalized names respectively
-    private static final HashMap<CraftingGroup, HashMap<String, IModernCraftingRecipe>> categoricalLookup = new HashMap<>(50, 0.7f);
+    private static final HashMap<CraftingGroup, HashMap<String, ICraftingRecipe>> categoricalLookup = new HashMap<>(50, 0.7f);
 
     protected static HashMap<String, CraftingEntry[]> recipeMap = new HashMap<>();
 
-    private static final HashMap<Item, IModernCraftingRecipe> hookMap = new HashMap<>();
+    private static final HashMap<Item, ICraftingRecipe> hookMap = new HashMap<>();
 
     static {
         // Fills the maps with the groups (obviously important
@@ -36,7 +36,7 @@ public class CraftingRegistry {
     }
 
     /**
-     * Returns the IModernCraftingRecipe given the crafting group to search and the
+     * Returns the ICraftingRecipe given the crafting group to search and the
      * unlocalized name of the item you are looking to craft.
      *
      * @param group - Crafting group of the crafting you are looking for
@@ -44,12 +44,12 @@ public class CraftingRegistry {
      *
      * @return The modern crafting of that item
      */
-    public static IModernCraftingRecipe getModernCrafting(CraftingGroup group, String name) {
+    public static ICraftingRecipe getModernCrafting(CraftingGroup group, String name) {
         return categoricalLookup.get(group).get(name);
     }
 
     /**
-     * Returns if there is an IModernCraftingRecipe for an item given
+     * Returns if there is an ICraftingRecipe for an item given
      * the crafting group to search and the unlocalized name of
      * the item you are looking to check.
      *
@@ -69,17 +69,17 @@ public class CraftingRegistry {
      *
      * @return The list of all the items registered to that category
      */
-    public static ArrayList<IModernCraftingRecipe> getCraftingListForGroup(CraftingGroup group) {
+    public static ArrayList<ICraftingRecipe> getCraftingListForGroup(CraftingGroup group) {
         return craftingMap.get(group);
     }
 
     /**
-     * Registers an implementor of {@link IModernCraftingRecipe}
+     * Registers an implementor of {@link ICraftingRecipe}
      *
-     * @param crafting - IModernCraftingRecipe to register
+     * @param crafting - ICraftingRecipe to register
      */
-    public static void registerHook(IModernCraftingRecipe crafting) {
-        hookMap.put(crafting.getItemStack().getItem(), crafting);
+    public static void registerHook(ICraftingRecipe crafting) {
+        hookMap.put(crafting.getOutput().getItem(), crafting);
     }
 
     public static boolean hasHook(String registryName) {
@@ -90,11 +90,11 @@ public class CraftingRegistry {
         return hookMap.containsKey(item);
     }
 
-    public static IModernCraftingRecipe getHook(String registryName) {
+    public static ICraftingRecipe getHook(String registryName) {
         return getHook(Item.getByNameOrId(registryName));
     }
 
-    public static IModernCraftingRecipe getHook(Item item) {
+    public static ICraftingRecipe getHook(Item item) {
         return hookMap.get(item);
     }
 
@@ -106,7 +106,7 @@ public class CraftingRegistry {
         return isRecipeRegistered(getHook(item));
     }
 
-    protected static boolean isRecipeRegistered(IModernCraftingRecipe crafting) {
+    protected static boolean isRecipeRegistered(ICraftingRecipe crafting) {
         if (crafting.getCraftingGroup() == null) {
             return false;
         }
@@ -118,10 +118,10 @@ public class CraftingRegistry {
         deleteRecipeRegistry(getHook(item));
     }
 
-    public static void deleteRecipeRegistry(IModernCraftingRecipe crafting) {
-        hookMap.remove(crafting.getItemStack().getItem(), crafting);
+    public static void deleteRecipeRegistry(ICraftingRecipe crafting) {
+        hookMap.remove(crafting.getOutput().getItem(), crafting);
         craftingMap.get(crafting.getCraftingGroup()).remove(crafting);
-        categoricalLookup.get(crafting.getCraftingGroup()).remove(crafting.getItemStack().getTranslationKey());
+        categoricalLookup.get(crafting.getCraftingGroup()).remove(crafting.getOutput().getTranslationKey());
     }
 
     public static void clearRecipeRegistry() {
@@ -134,7 +134,7 @@ public class CraftingRegistry {
     }
 
     public static void registerRecipe(Item item, CraftingGroup group, CraftingEntry[] entry) {
-        IModernCraftingRecipe crafting = getHook(item);
+        ICraftingRecipe crafting = getHook(item);
 
         // Sets their crafting groups
         try {
@@ -152,14 +152,14 @@ public class CraftingRegistry {
 
         // Registers them
         craftingMap.get(crafting.getCraftingGroup()).add(crafting);
-        categoricalLookup.get(crafting.getCraftingGroup()).put(crafting.getItemStack().getTranslationKey(), crafting);
+        categoricalLookup.get(crafting.getCraftingGroup()).put(crafting.getOutput().getTranslationKey(), crafting);
     }
 
-    public static void registerRecipe(IModernCraftingRecipe crafting) {
+    public static void registerRecipe(ICraftingRecipe crafting) {
         registerHook(crafting);
         // Registers them
         craftingMap.get(crafting.getCraftingGroup()).add(crafting);
-        categoricalLookup.get(crafting.getCraftingGroup()).put(crafting.getItemStack().getTranslationKey(), crafting);
+        categoricalLookup.get(crafting.getCraftingGroup()).put(crafting.getOutput().getTranslationKey(), crafting);
     }
 
     public static void clearRegistry() {

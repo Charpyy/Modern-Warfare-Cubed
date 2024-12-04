@@ -3,7 +3,7 @@ package com.paneedah.weaponlib;
 import com.paneedah.weaponlib.crafting.CraftingEntry;
 import com.paneedah.weaponlib.crafting.CraftingGroup;
 import com.paneedah.weaponlib.crafting.CraftingRegistry;
-import com.paneedah.weaponlib.crafting.IModernCraftingRecipe;
+import com.paneedah.weaponlib.crafting.ICraftingRecipe;
 import com.paneedah.weaponlib.model.ModelBaseRendererWrapper;
 import com.paneedah.weaponlib.model.WrappableModel;
 import lombok.Getter;
@@ -38,7 +38,7 @@ import static com.paneedah.mwc.handlers.ClientEventHandler.COOKING_QUEUE;
 import static com.paneedah.mwc.proxies.ClientProxy.MC;
 import static com.paneedah.mwc.ProjectConstants.ID;
 
-public class CustomArmor extends ItemArmor implements ExposureProtection, ISpecialArmor, IModernCraftingRecipe {
+public class CustomArmor extends ItemArmor implements ExposureProtection, ISpecialArmor, ICraftingRecipe {
 
     private static final String ACTIVE_ATTACHMENT_TAG = "ActiveAttachments";
 
@@ -603,12 +603,12 @@ public class CustomArmor extends ItemArmor implements ExposureProtection, ISpeci
     }
 
     @Override
-    public CraftingEntry[] getModernRecipe() {
+    public CraftingEntry[] getCraftingRecipe() {
         return this.modernRecipe;
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public ItemStack getOutput() {
         return new ItemStack(this);
     }
 
@@ -618,8 +618,8 @@ public class CustomArmor extends ItemArmor implements ExposureProtection, ISpeci
     }
 
     @Override
-    public void setCraftingRecipe(CraftingEntry[] recipe) {
-        this.modernRecipe = recipe;
+    public void setCraftingRecipe(CraftingEntry[] craftingRecipe) {
+        this.modernRecipe = craftingRecipe;
     }
 
     @Override
