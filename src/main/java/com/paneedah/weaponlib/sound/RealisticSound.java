@@ -12,9 +12,9 @@ public class RealisticSound {
     private final float pitchIn;
 
     private static final float MINIMUM_VOLUME = 0.0F;
-    private static final float BASE_VOLUME = 100.0F;
+    private static final float BASE_VOLUME = 1.0F;
     private static final float BASE_PITCH = 1.0F;
-    private static final float MAX_DISTANCE = 400.0F;
+    private static final double MAX_DISTANCE = 3400.0F;
 
     public RealisticSound(SoundEvent sound, SoundCategory categoryIn, float volumeIn, float pitchIn) {
         this.sound = sound;
@@ -23,19 +23,31 @@ public class RealisticSound {
         this.pitchIn = pitchIn;
     }
 
-    public static RealisticSound createSound(SoundEvent soundIn, BlockPos origin, BlockPos playercoord) {
+    public static RealisticSound createSound(Boolean silencer, SoundEvent soundIn, BlockPos origin, BlockPos playercoord) {
         double distance = Math.sqrt(playercoord.distanceSq(origin));
-        float volume = adjustVolumeForDistance(distance);
-        float pitch = adjustPitchForDistance(distance);
-        return new RealisticSound(soundIn, SoundCategory.PLAYERS, volume, pitch);
+        float volume = (float) adjustVolumeForDistance(distance, MAX_DISTANCE);
+        if (silencer && volume > 0D) {
+            volume *= 0.4F;
+        }
+        //float pitch = adjustPitchForDistance(distance);
+        return new RealisticSound(soundIn, SoundCategory.PLAYERS, volume, BASE_PITCH);
     }
 
+
+    //DOPPLER
     private static float adjustPitchForDistance(double distance) {
         return BASE_PITCH * (1.0f - (float) Math.min(distance / 100.0, 0.5));
     }
 
-    private static float adjustVolumeForDistance(double distance) {
-        return Math.max(MINIMUM_VOLUME, BASE_VOLUME * (1 - (float) distance / MAX_DISTANCE));
+
+    public static double adjustVolumeForDistance(double distance, double maxDistance) {
+        if (distance >= maxDistance) {
+            return 0.0F;
+        }
+        if (distance <= 0) {
+            return 1.0F;
+        }
+        return 1.0F - (distance / maxDistance);
     }
 
     public SoundEvent getSound() {
