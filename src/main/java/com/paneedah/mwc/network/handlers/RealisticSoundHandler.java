@@ -19,27 +19,24 @@ public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMess
         ctx.getServerHandler().player.getServerWorld().addScheduledTask(() -> {
             EntityPlayerMP player = ctx.getServerHandler().player;
             World world = player.getServerWorld().getMinecraftServer().getWorld(message.getWorldId());
-            System.out.println("  ");
-            System.out.println(" WORLD ID : "+message.getWorldId());
-            System.out.println("  ");
-
             if (world != null) {
                 for (EntityPlayer playerInWorld : world.playerEntities) {
                     double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
-
                     System.out.println("  ");
-                    System.out.println("Distance to player " + playerInWorld.getName() + ": " + distance);
+                    System.out.println("  Distance: "+distance);
                     System.out.println("  ");
-
-                    RealisticSound sound = RealisticSound.createSound(message.getSound(), message.getPos(), playerInWorld.getPosition());
-                    //TOOD pourquoi pas envoyer le paquet avec la latence ici en fonction de la distance
+                    RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
                     if (sound.getVolumeIn() > 0) {
-                        System.out.println("  ");
-                        System.out.println("Volume OK pour joueur et distance: " + playerInWorld.getName() + ": " + distance);
-                        System.out.println("  ");
                         EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
-                        CHANNEL.sendTo(new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn()), playerMP);
-                        //world.playSound(playerInWorld, message.getPos(), sound.getCategoryIn(), sound.getVolumeIn(), sound.getPitchIn());
+                        playerMP.getServerWorld().addScheduledTask(() -> {
+                            System.out.println("  ");
+                            System.out.println("  Send du son, volume du son :" +sound.getVolumeIn());
+                            System.out.println("  ");
+                            CHANNEL.sendTo(
+                                    new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn(), distance),
+                                    playerMP
+                            );
+                        });
                     }
                 }
             }
