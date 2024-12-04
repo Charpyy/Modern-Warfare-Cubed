@@ -19,6 +19,7 @@ public class RealisticSoundClientMessage implements IMessage {
     private BlockPos pos;
     private float volume;
     private float pitch;
+    private double distance;
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -32,9 +33,9 @@ public class RealisticSoundClientMessage implements IMessage {
         int y = buf.readInt();
         int z = buf.readInt();
         pos = new BlockPos(x, y, z);
-
         volume = buf.readFloat();
         pitch = buf.readFloat();
+        distance = buf.readDouble();
     }
 
     @Override
@@ -50,10 +51,12 @@ public class RealisticSoundClientMessage implements IMessage {
 
         buf.writeFloat(volume);
         buf.writeFloat(pitch);
+        buf.writeDouble(distance);
     }
 
     public SoundEvent getSound() {return this.sound;}
     public BlockPos getPos() { return this.pos;}
     public float getVolume() {return this.volume;}
     public float getPitch() {return this.pitch;}
+    public double getDistance() {return this.distance;}
 }
