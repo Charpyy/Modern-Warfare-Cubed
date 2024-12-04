@@ -21,18 +21,43 @@ public class RealisticSoundClientHandler implements IMessageHandler<RealisticSou
             if (minecraft.world != null) {
                 System.out.println("  ");
                 System.out.println("  ");
-                System.out.println("  Minecraft sound client check avec coord: "+message.getPos());
+                System.out.println("  Minecraft sound client check avec coord: " + message.getPos());
                 System.out.println("  ");
-                minecraft.world.playSound(
-                        message.getPos().getX(),
-                        message.getPos().getY(),
-                        message.getPos().getZ(),
-                        message.getSound(),
-                        SoundCategory.PLAYERS,
-                        message.getVolume(),
-                        message.getPitch(),
-                        false
-                );
+                double distance = message.getDistance();
+                double speedOfSound = 343.0;
+                long delayInTicks = (long) ((distance / speedOfSound) * 20);
+                System.out.println(" ");
+                System.out.println(" ");
+                System.out.println(" DELAY IN TICKS ");
+                System.out.println(" ");
+                System.out.println(" ");
+                minecraft.addScheduledTask(new Runnable() {
+                    private long ticks = 0;
+
+                    @Override
+                    public void run() {
+                        if (ticks >= delayInTicks) {
+                            minecraft.world.playSound(
+                                    message.getPos().getX(),
+                                    message.getPos().getY(),
+                                    message.getPos().getZ(),
+                                    message.getSound(),
+                                    SoundCategory.PLAYERS,
+                                    message.getVolume(),
+                                    message.getPitch(),
+                                    false
+                            );
+                            System.out.println(" ");
+                            System.out.println(" ");
+                            System.out.println(" PLAY SOUND NOW");
+                            System.out.println(" ");
+                            System.out.println(" ");
+                        } else {
+                            ticks++;
+                            Minecraft.getMinecraft().addScheduledTask(this);
+                        }
+                    }
+                });
             }
         });
         return null;
