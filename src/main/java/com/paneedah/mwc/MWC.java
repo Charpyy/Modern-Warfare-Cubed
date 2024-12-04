@@ -123,7 +123,7 @@ public final class MWC {
         CHANNEL.registerMessage(new VehicleClientMessageHandler(), VehicleClientMessage.class, -13, Side.CLIENT);
         CHANNEL.registerMessage(new EntityInventorySyncMessageClientHandler(modContext), EntityInventorySyncMessage.class, -14, Side.CLIENT);
         CHANNEL.registerMessage(new ExposureMessageHandler(), ExposureMessage.class, -15, Side.CLIENT);
-        CHANNEL.registerMessage(new RealisticSoundClientHandler(), RealisticSoundClientMessage.class, -16, Side.CLIENT);
+        CHANNEL.registerMessage(new RealisticSoundClientHandler(), RealisticSoundClientMessage.class, -17, Side.CLIENT);
 
         CHANNEL.registerMessage(new TryFireMessageHandler(modContext.getWeaponFireAspect()), TryFireMessage.class, 1, Side.SERVER);
         CHANNEL.registerMessage(new PermitMessageServerHandler((CommonModContext) modContext), PermitMessage.class, 2, Side.SERVER);
