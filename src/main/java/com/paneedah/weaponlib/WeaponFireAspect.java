@@ -286,15 +286,9 @@ public class WeaponFireAspect implements Aspect<WeaponState, PlayerWeaponInstanc
             // Should prevent sound from being one sided
 
             if (!FMLCommonHandler.instance().getSide().isServer()) {
-                System.out.println("  ");
-                System.out.println("  FIRE ");
-                System.out.println("  ");
                 CHANNEL.sendToServer(new RealisticSoundMessage(silencerOn, shootSound, player.getPosition(), player.getEntityWorld().getWorldType().getId()));
-                //
-                //PositionedSoundRecord psr = new PositionedSoundRecord(shootSound, SoundCategory.PLAYERS, silencerOn ? weapon.getSilencedShootSoundVolume() * 0.4f : weapon.getShootSoundVolume() * 0.4f, 1.0F, MC.player.getPosition().up(5));
-                //playShootSound(psr);
-                //MC.getSoundHandler().playSound(psr);
             }
+
 
             //MC.getSoundHandler().playSound(new PositionedSoundRecord(shootSound.getSound(), SoundCategory.PLAYERS,silencerOn ? weapon.getSilencedShootSoundVolume() : weapon.getShootSoundVolume(), 1f, MC.player.getPosition()));
             /*
