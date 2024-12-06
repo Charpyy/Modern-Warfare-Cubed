@@ -1,62 +1,24 @@
-package com.paneedah.mwc.network.messages;
+package com.paneedah.mwc.network.handlers;
 
-import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
+import com.paneedah.mwc.network.messages.RealisticSoundClientMessage;
+import com.paneedah.weaponlib.sound.ClientSoundPlayer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class RealisticSoundClientMessage implements IMessage {
-
-    private SoundEvent sound;
-    private BlockPos pos;
-    private float volume;
-    private float pitch;
-    private double distance;
+public class RealisticSoundClientHandler implements IMessageHandler<RealisticSoundClientMessage, IMessage> {
 
     @Override
-    public void fromBytes(ByteBuf buf) {
-        int length = buf.readInt();
-        byte[] soundBytes = new byte[length];
-        buf.readBytes(soundBytes);
-        String soundName = new String(soundBytes);
-        sound = SoundEvent.REGISTRY.getObject(new ResourceLocation(soundName));
-
-        int x = buf.readInt();
-        int y = buf.readInt();
-        int z = buf.readInt();
-        pos = new BlockPos(x, y, z);
-        volume = buf.readFloat();
-        pitch = buf.readFloat();
-        distance = buf.readDouble();
+    public IMessage onMessage(RealisticSoundClientMessage message, MessageContext ctx) {
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (minecraft.world != null) {
+                ClientSoundPlayer csp = new ClientSoundPlayer();
+                csp.PlaySoundClient(message.getDistance(), message.getSound(), SoundCategory.PLAYERS, message.getVolume(), message.getPitch(), (float)message.getPos().getX(), (float)message.getPos().getY(), (float)message.getPos().getZ());
+            }
+        });
+        return null;
     }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        String soundName = sound.getRegistryName().toString();
-        byte[] soundBytes = soundName.getBytes();
-        buf.writeInt(soundBytes.length);
-        buf.writeBytes(soundBytes);
-
-        buf.writeInt(pos.getX());
-        buf.writeInt(pos.getY());
-        buf.writeInt(pos.getZ());
-
-        buf.writeFloat(volume);
-        buf.writeFloat(pitch);
-        buf.writeDouble(distance);
-    }
-
-    public SoundEvent getSound() {return this.sound;}
-    public BlockPos getPos() { return this.pos;}
-    public float getVolume() {return this.volume;}
-    public float getPitch() {return this.pitch;}
-    public double getDistance() {return this.distance;}
 }
