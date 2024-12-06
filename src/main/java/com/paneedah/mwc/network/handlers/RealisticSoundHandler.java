@@ -19,25 +19,17 @@ public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMess
         ctx.getServerHandler().player.getServerWorld().addScheduledTask(() -> {
             EntityPlayerMP player = ctx.getServerHandler().player;
             World world = player.getServerWorld().getMinecraftServer().getWorld(message.getWorldId());
-            if (world != null) {
-                for (EntityPlayer playerInWorld : world.playerEntities) {
-                    double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
-                    System.out.println("  ");
-                    System.out.println("  Distance: "+distance);
-                    System.out.println("  ");
-                    RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
-                    if (sound.getVolumeIn() > 0) {
-                        EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
-                        playerMP.getServerWorld().addScheduledTask(() -> {
-                            System.out.println("  ");
-                            System.out.println("  Send du son, volume du son :" +sound.getVolumeIn());
-                            System.out.println("  ");
-                            CHANNEL.sendTo(
-                                    new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn(), distance),
-                                    playerMP
-                            );
-                        });
-                    }
+            for (EntityPlayer playerInWorld : world.playerEntities) {
+                double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
+                RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
+                if (sound.getVolumeIn() > 0.0F) {
+                    EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
+                    playerMP.getServerWorld().addScheduledTask(() -> {
+                        CHANNEL.sendTo(
+                                new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn(), distance),
+                                playerMP
+                        );
+                    });
                 }
             }
         });
