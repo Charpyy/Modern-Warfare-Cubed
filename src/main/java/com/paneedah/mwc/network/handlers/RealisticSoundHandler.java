@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.Objects;
+
 import static com.paneedah.mwc.MWC.CHANNEL;
 
 public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMessage, IMessage> {
@@ -17,12 +19,13 @@ public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMess
     @Override
     public IMessage onMessage(RealisticSoundMessage message, MessageContext ctx) {
         ctx.getServerHandler().player.getServerWorld().addScheduledTask(() -> {
-            EntityPlayerMP player = ctx.getServerHandler().player;
-            World world = player.getServerWorld().getMinecraftServer().getWorld(message.getWorldId());
+            EntityPlayer player = ctx.getServerHandler().player;
+            World world = player.getEntityWorld();
             for (EntityPlayer playerInWorld : world.playerEntities) {
                 double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
                 RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
                 if (sound.getVolumeIn() > 0.0F) {
+                    if (playerInWorld instanceof EntityPlayerMP) {
                     EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
                     playerMP.getServerWorld().addScheduledTask(() -> {
                         CHANNEL.sendTo(
@@ -30,6 +33,7 @@ public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMess
                                 playerMP
                         );
                     });
+                    }
                 }
             }
         });
