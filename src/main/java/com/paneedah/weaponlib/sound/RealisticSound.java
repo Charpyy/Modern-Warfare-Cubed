@@ -27,13 +27,13 @@ public class RealisticSound {
 
     public static double adjustVolumeForDistance(final boolean silencer, final double distance) {
         double maxDistance = silencer ? MAX_DISTANCE_SILENCER : MAX_DISTANCE;
-        if (distance >= maxDistance) {
-            return 0.0;
-        }
-        if (distance <= 0) {
-            return 1.0;
-        }
-        return 1.0 - (distance / maxDistance);
+        if (distance >= maxDistance)
+            return 0;
+        
+        if (distance <= 0)
+            return 1;
+        
+        return 1 - (distance / maxDistance);
     }
 
     public SoundEvent getSound() {
