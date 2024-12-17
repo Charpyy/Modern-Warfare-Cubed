@@ -297,12 +297,13 @@ public class WeaponFireAspect implements Aspect<WeaponState, PlayerWeaponInstanc
         }
 
         int currentAmmo = weaponInstance.getAmmo();
-        if(currentAmmo == 1 && weapon.getEndOfShootSound() != null && !FMLCommonHandler.instance().getSide().isServer()) {
+        if (currentAmmo == 1 && weapon.getEndOfShootSound() != null && !FMLCommonHandler.instance().getSide().isServer()) {
             CHANNEL.sendToServer(new RealisticSoundMessage(silencerOn,weapon.getEndOfShootSound(), player.getPosition(), player.getEntityWorld().getWorldType().getId()));
 //        	PositionedSoundRecord psr = new PositionedSoundRecord(weapon.getEndOfShootSound(), SoundCategory.PLAYERS, 1.0F, 1.0F, MC.player.getPosition().up(5));
 //        	playShootSound(psr);
             //MC.getSoundHandler().playSound(psr);
         }
+        
         if (currentAmmo == 1) {
             weaponInstance.setSlideLock(true);
         }

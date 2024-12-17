@@ -13,26 +13,29 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RealisticSoundClientMessage implements IMessage {
+public final class RealisticSoundClientMessage implements IMessage {
 
-    private SoundEvent sound;
-    private BlockPos pos;
     private float volume;
     private float pitch;
+    
     private double distance;
+    
+    private SoundEvent sound;
+    private BlockPos pos;
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(final ByteBuf buf) {
         int length = buf.readInt();
         byte[] soundBytes = new byte[length];
         buf.readBytes(soundBytes);
         String soundName = new String(soundBytes);
         sound = SoundEvent.REGISTRY.getObject(new ResourceLocation(soundName));
 
-        int x = buf.readInt();
-        int y = buf.readInt();
-        int z = buf.readInt();
+        final int x = buf.readInt();
+        final int y = buf.readInt();
+        final int z = buf.readInt();
         pos = new BlockPos(x, y, z);
+        
         volume = buf.readFloat();
         pitch = buf.readFloat();
         distance = buf.readDouble();

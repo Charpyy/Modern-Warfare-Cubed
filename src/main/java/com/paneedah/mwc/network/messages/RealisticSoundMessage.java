@@ -12,36 +12,41 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RealisticSoundMessage implements IMessage {
-    boolean silencer;
+public final class RealisticSoundMessage implements IMessage {
+    private boolean silencer;
+    
+    private int dimensionId;
+    
     private SoundEvent sound;
     private BlockPos pos;
-    private int dimensionId;
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(final ByteBuf buf) {
         int length = buf.readInt();
         byte[] soundBytes = new byte[length];
         buf.readBytes(soundBytes);
         String soundName = new String(soundBytes);
         sound = SoundEvent.REGISTRY.getObject(new ResourceLocation(soundName));
-        int x = buf.readInt();
-        int y = buf.readInt();
-        int z = buf.readInt();
+        final int x = buf.readInt();
+        final int y = buf.readInt();
+        final int z = buf.readInt();
         pos = new BlockPos(x, y, z);
+        
         dimensionId = buf.readInt();
         silencer = buf.readBoolean();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(final ByteBuf buf) {
         String soundName = sound.getRegistryName().toString();
         byte[] soundBytes = soundName.getBytes();
         buf.writeInt(soundBytes.length);
         buf.writeBytes(soundBytes);
+
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
+        
         buf.writeInt(dimensionId);
         buf.writeBoolean(silencer);
     }

@@ -17,26 +17,24 @@ import static com.paneedah.mwc.MWC.CHANNEL;
 public class RealisticSoundHandler implements IMessageHandler<RealisticSoundMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(RealisticSoundMessage message, MessageContext ctx) {
+    public IMessage onMessage(final RealisticSoundMessage message, final MessageContext ctx) {
         ctx.getServerHandler().player.getServerWorld().addScheduledTask(() -> {
-            EntityPlayer player = ctx.getServerHandler().player;
-            World world = player.getEntityWorld();
+            final EntityPlayer player = ctx.getServerHandler().player;
+            final World world = player.getEntityWorld();
             for (EntityPlayer playerInWorld : world.playerEntities) {
-                double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
-                RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
-                if (sound.getVolumeIn() > 0.0F) {
+                final double distance = Math.sqrt(message.getPos().distanceSq(playerInWorld.getPosition()));
+                final RealisticSound sound = RealisticSound.createSound(message.getSilencer(), message.getSound(), message.getPos(), playerInWorld.getPosition());
+                if (sound.getVolumeIn() > 0) {
                     if (playerInWorld instanceof EntityPlayerMP) {
                     EntityPlayerMP playerMP = (EntityPlayerMP) playerInWorld;
                     playerMP.getServerWorld().addScheduledTask(() -> {
-                        CHANNEL.sendTo(
-                                new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn(), distance),
-                                playerMP
-                        );
+                        CHANNEL.sendTo(new RealisticSoundClientMessage(sound.getSound(), message.getPos(), sound.getVolumeIn(), sound.getPitchIn(), distance), playerMP);
                     });
                     }
                 }
             }
         });
+        
         return null;
     }
 }

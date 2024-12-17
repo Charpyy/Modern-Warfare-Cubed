@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class RealisticSoundClientHandler implements IMessageHandler<RealisticSoundClientMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(RealisticSoundClientMessage message, MessageContext ctx) {
+    public IMessage onMessage(final RealisticSoundClientMessage message, final MessageContext ctx) {
         Minecraft.getMinecraft().addScheduledTask(() -> {
             Minecraft minecraft = Minecraft.getMinecraft();
             if (minecraft.world != null) {

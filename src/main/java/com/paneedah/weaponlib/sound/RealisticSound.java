@@ -4,14 +4,15 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 
-public class RealisticSound {
-
-    private final SoundEvent sound;
-    private final float volumeIn;
-    private final float pitchIn;
+public final class RealisticSound {
 
     private static final double MAX_DISTANCE = 400D;
     private static final double MAX_DISTANCE_SILENCER = 100D;
+
+    private final float volumeIn;
+    private final float pitchIn;
+
+    private final SoundEvent sound;
 
     public RealisticSound(SoundEvent sound, float volumeIn, float pitchIn) {
         this.sound = sound;
@@ -26,7 +27,7 @@ public class RealisticSound {
     }
 
     public static double adjustVolumeForDistance(final boolean silencer, final double distance) {
-        double maxDistance = silencer ? MAX_DISTANCE_SILENCER : MAX_DISTANCE;
+        final double maxDistance = silencer ? MAX_DISTANCE_SILENCER : MAX_DISTANCE;
         if (distance >= maxDistance)
             return 0;
         

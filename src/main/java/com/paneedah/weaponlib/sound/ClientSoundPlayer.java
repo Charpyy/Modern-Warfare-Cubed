@@ -8,14 +8,15 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ClientSoundPlayer {
+public final class ClientSoundPlayer {
+
     @SideOnly(Side.CLIENT)
     public void PlaySoundClient(double distance, SoundEvent soundIn, SoundCategory categoryIn, float volumeIn, float pitchIn, float xIn, float yIn, float zIn) {
         Minecraft mc = Minecraft.getMinecraft();
         PositionedSoundRecord positionedsoundrecord = new PositionedSoundRecord(soundIn.getSoundName(), categoryIn, volumeIn, pitchIn, false, 0, ISound.AttenuationType.NONE, xIn,yIn, zIn);
         if (distance > 100.0D)
         {
-            double d1 = Math.sqrt(distance) / 40.0D;
+            final double d1 = Math.sqrt(distance) / 40D;
             mc.getSoundHandler().playDelayedSound(positionedsoundrecord, (int)(d1 * 20.0D));
         } else {
             mc.getSoundHandler().playSound(positionedsoundrecord);
