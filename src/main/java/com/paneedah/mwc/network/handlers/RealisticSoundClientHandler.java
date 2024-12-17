@@ -19,6 +19,7 @@ public class RealisticSoundClientHandler implements IMessageHandler<RealisticSou
                 csp.PlaySoundClient(message.getDistance(), message.getSound(), SoundCategory.PLAYERS, message.getVolume(), message.getPitch(), (float)message.getPos().getX(), (float)message.getPos().getY(), (float)message.getPos().getZ());
             }
         });
+        
         return null;
     }
 }
