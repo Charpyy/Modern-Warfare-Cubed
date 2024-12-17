@@ -25,7 +25,7 @@ public class RealisticSound {
         return new RealisticSound(soundIn, volume, 1.0F);
     }
 
-    public static double adjustVolumeForDistance(boolean silencer, double distance) {
+    public static double adjustVolumeForDistance(final boolean silencer, final double distance) {
         double maxDistance = silencer ? MAX_DISTANCE_SILENCER : MAX_DISTANCE;
         if (distance >= maxDistance) {
             return 0.0;
